@@ -1,0 +1,8 @@
+__pycache__/
+data/
+env/
+
+
+# Temporary
+scratch/
+src/HD-SEQ-ID/
