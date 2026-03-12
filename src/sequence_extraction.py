@@ -3,8 +3,6 @@ import SimpleITK as sitk
 
 from enum import Enum
 
-reader = sitk.ImageFileReader()
-
 Type = Enum('Type', [
     ('t T1 3D TFE gd GTV_GBM', 0),
     ('t T2 3D TSE FLAIR', 1),
@@ -12,9 +10,10 @@ Type = Enum('Type', [
     ('t T1 3D TFE', 3)
 ])
 
-def getMetaData(file: str, keys: List[str]):
+def getMetaData(image: sitk.Image, keys: List[str]):
     keys_map = {
         "series": '0008|103e',
+        "series_num": '0008|103f',
         "location": '0020|1041',
         "patient": '0010|0010',
         "study": '0008|1030',
@@ -25,33 +24,44 @@ def getMetaData(file: str, keys: List[str]):
         "position": '0020|0032',
         "spacing": '0028|0030',
     }
-    reader.SetFileName(file)
-    image = reader.Execute()
+
+    metadata_keys = image.GetMetaDataKeys()
 
     output = ()
     for key in keys:
-        output += image.GetMetaData(keys_map[key]),
+        meta_key = keys_map[key]
+        if meta_key in metadata_keys:
+            output += image.GetMetaData(meta_key),
+        else:
+            output += '',
 
     return output
 
 
 def extractSequences(input_dir: str):
-    sequences = {}
+    sequences = {} # structure: {series_num: (filepath, location)[]}
+
+    # series = sitk.ImageSeriesReader.GetGDCMSeriesIDs(input_dir)
+    # print(series)
+
 
     for file_name in os.listdir(input_dir):
+        # TODO catch error if not folder
+        # TODO glob all and write to subfolders
+        
         file_path = os.path.join(input_dir, file_name)
+        image = sitk.ReadImage(file_path)
     
-        series, patient, location = getMetaData(file_path, ['series', 'patient', 'location'])
+        series, location = getMetaData(image, ['series', 'location'])
+
+
+        # TODO get sequence from hd-seq
+        # Combine metadata and hd-seq for series data
         series = series.strip()
         series_num = Type[series].value
 
         new_file = [(file_path, float(location))]
-        s = sequences.get(series_num, {
-            "slices": new_file,
-            "patient": patient.rsplit("_", 1)[1].strip()
-        })
-        s.update({"slices": s["slices"] + new_file})
-
-        sequences.update({series_num: s})
+        current = sequences.get(series_num, [])
+        sequences.update({series_num: current + new_file})
 
     return sequences
