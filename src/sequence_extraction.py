@@ -3,7 +3,7 @@ import SimpleITK as sitk
 
 from enum import Enum
 
-Type = Enum('Type', [
+Channel = Enum('Channel', [
     ('t T1 3D TFE gd GTV_GBM', 0),
     ('t T2 3D TSE FLAIR', 1),
     ('t T2 TSE gd', 2),
@@ -58,7 +58,7 @@ def extractSequences(input_dir: str):
         # TODO get sequence from hd-seq
         # Combine metadata and hd-seq for series data
         series = series.strip()
-        series_num = Type[series].value
+        series_num = Channel[series].value
 
         new_file = [(file_path, float(location))]
         current = sequences.get(series_num, [])

@@ -36,12 +36,14 @@ for series, slices in sequences.items():
     # Get all these from metadata?
     # patient, = getMetaData(image, ['patient'])
     # patient = patient.rsplit("_", 1)[1].strip()
-    patient = "0001"
-    title = "Test"
-    case_num = 0
+    title = "Test-0001-000"
 
-    compress = False
-    file = createFileName(title, patient, case_num, series, output_dir)
-    writeFile(file, image, compress)
+    file = createFileName(title, series, output_dir, "nii")
+    writeFile(file, image, 'NiftiImageIO')
+
+    if series == 0:
+        dcm_file = createFileName(title, series, output_dir, "dcm")
+        writeFile(dcm_file, image)
+
 
 
