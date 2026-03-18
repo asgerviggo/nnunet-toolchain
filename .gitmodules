@@ -1,3 +1,9 @@
 [submodule "operators/jupyter-brats-bet"]
 	path = operators/jupyter-brats-bet
 	url = git@gitlab.com:dcpt-clinical/kubeflow/base-images/jupyter-brats-bet.git
+[submodule "operators/dicom_to_nifti_multichannel"]
+	path = operators/dicom_to_nifti_multichannel
+	url = git@gitlab.com:dcpt-clinical/DicomFlow/operators/dicom_to_nifti_multichannel.git
+[submodule "operators/registration_multichannel"]
+	path = operators/registration_multichannel
+	url = git@gitlab.com:dcpt-clinical/DicomFlow/operators/registration_multichannel.git
